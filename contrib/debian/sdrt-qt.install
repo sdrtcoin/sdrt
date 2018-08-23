@@ -1,0 +1,6 @@
+usr/local/bin/sdrt-qt usr/bin
+share/pixmaps/sdrt32.xpm usr/share/pixmaps
+share/pixmaps/sdrt16.xpm usr/share/pixmaps
+share/pixmaps/sdrt128.png usr/share/pixmaps
+debian/sdrt-qt.desktop usr/share/applications
+debian/sdrt-qt.protocol usr/share/kde4/services/

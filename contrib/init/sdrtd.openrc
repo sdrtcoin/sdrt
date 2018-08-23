@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/sdrtcore/.sdrtcore" ]; then
+	SDRTD_DEFAULT_DATADIR="/var/lib/sdrtcore/.sdrtcore"
+else
+	SDRTD_DEFAULT_DATADIR="/var/lib/sdrtd"
+fi
+
+SDRTD_CONFIGFILE=${SDRTD_CONFIGFILE:-/etc/sdrtcore/sdrt.conf}
+SDRTD_PIDDIR=${SDRTD_PIDDIR:-/var/run/sdrtd}
+SDRTD_PIDFILE=${SDRTD_PIDFILE:-${SDRTD_PIDDIR}/sdrtd.pid}
+SDRTD_DATADIR=${SDRTD_DATADIR:-${SDRTD_DEFAULT_DATADIR}}
+SDRTD_USER=${SDRTD_USER:-${SDRT_USER:-sdrtcore}}
+SDRTD_GROUP=${SDRTD_GROUP:-sdrtcore}
+SDRTD_BIN=${SDRTD_BIN:-/usr/bin/sdrtd}
+SDRTD_NICE=${SDRTD_NICE:-${NICELEVEL:-0}}
+SDRTD_OPTS="${SDRTD_OPTS:-${SDRT_OPTS}}"
+
+name="SDRT Core Daemon"
+description="SDRT cryptocurrency P2P network daemon"
+
+command="/usr/bin/sdrtd"
+command_args="-pid=\"${SDRTD_PIDFILE}\" \
+		-conf=\"${SDRTD_CONFIGFILE}\" \
+		-datadir=\"${SDRTD_DATADIR}\" \
+		-daemon \
+		${SDRTD_OPTS}"
+
+required_files="${SDRTD_CONFIGFILE}"
+start_stop_daemon_args="-u ${SDRTD_USER} \
+			-N ${SDRTD_NICE} -w 2000"
+pidfile="${SDRTD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${SDRTD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${SDRTD_USER}:${SDRTD_GROUP}" \
+	"${SDRTD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${SDRTD_USER}:${SDRTD_GROUP}" \
+	"${SDRTD_PIDDIR}"
+
+	checkpath -f \
+	-o ${SDRTD_USER}:${SDRTD_GROUP} \
+	-m 0660 \
+	${SDRTD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${SDRTD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run sdrtd."
+		eerror "The setting must appear in ${SDRTD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"SDRT Core Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=SDRT
+Comment=SDRT P2P Cryptocurrency
+Comment[fr]=SDRT, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=SDRT, eşten eşe kriptografik sanal para birimi
+Exec=sdrt-qt %u
+Terminal=false
+Type=Application
+Icon=sdrt128
+MimeType=x-scheme-handler/sdrt;
+Categories=Office;Finance;

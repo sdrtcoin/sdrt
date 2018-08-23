@@ -1,0 +1,33 @@
+# /etc/conf.d/sdrtd: config file for /etc/init.d/sdrtd
+
+# Config file location
+#SDRTD_CONFIGFILE="/etc/sdrtcore/sdrt.conf"
+
+# What directory to write pidfile to?  (created and owned by $SDRTD_USER)
+#SDRTD_PIDDIR="/var/run/sdrtd"
+
+# What filename to give the pidfile
+#SDRTD_PIDFILE="${SDRTD_PIDDIR}/sdrtd.pid"
+
+# Where to write sdrtd data (be mindful that the blockchain is large)
+#SDRTD_DATADIR="/var/lib/sdrtd"
+
+# User and group to own sdrtd process
+#SDRTD_USER="sdrtcore"
+#SDRTD_GROUP="sdrtcore"
+
+# Path to sdrtd executable
+#SDRTD_BIN="/usr/bin/sdrtd"
+
+# Nice value to run sdrtd under
+#SDRTD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+SDRTD_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for sdrtd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+SDRTD_SIGTERM_TIMEOUT=60

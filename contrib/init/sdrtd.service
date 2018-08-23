@@ -1,0 +1,22 @@
+[Unit]
+Description=SDRT's distributed currency daemon
+After=network.target
+
+[Service]
+User=sdrtcore
+Group=sdrtcore
+
+Type=forking
+PIDFile=/var/lib/sdrtd/sdrtd.pid
+ExecStart=/usr/bin/sdrtd -daemon -pid=/var/lib/sdrtd/sdrtd.pid \
+-conf=/etc/sdrtcore/sdrt.conf -datadir=/var/lib/sdrtd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

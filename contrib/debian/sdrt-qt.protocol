@@ -1,0 +1,11 @@
+[Protocol]
+exec=sdrt-qt '%u'
+protocol=sdrt
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
